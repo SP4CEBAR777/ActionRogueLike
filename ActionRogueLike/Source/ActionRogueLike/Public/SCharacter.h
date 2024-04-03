@@ -8,9 +8,11 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class USInteractionComponent;
+class UAnimMontage;
+class USAttributeComponent;
 
-UCLASS()
-class ACTIONROGUELIKE_API ASCharacter : public ACharacter {
+UCLASS() class ACTIONROGUELIKE_API ASCharacter : public ACharacter {
   GENERATED_BODY()
 
 public:
@@ -23,15 +25,28 @@ protected:
 
   UPROPERTY(VisibleAnywhere)
   USpringArmComponent *SpringArmComp;
+
   UPROPERTY(VisibleAnywhere)
   UCameraComponent *CameraComp;
 
-  UPROPERTY(EditAnywhere)
+  UPROPERTY(VisibleAnywhere)
+  USInteractionComponent *InteractionComp;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
   TSubclassOf<class AActor> ProjectileClass;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  UAnimMontage *AttackAnim;
+  FTimerHandle TimerHandle_PrimaryAttack;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadonly, Category = "Components")
+  USAttributeComponent *AttributeComp;
 
   void MoveForward(float value);
   void MoveRight(float value);
   void PrimaryAttack();
+  void PrimaryAttack_TimeElapsed();
+  void PrimaryInteract();
 
 public:
   // Called every frame
