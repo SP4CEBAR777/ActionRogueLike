@@ -3,7 +3,9 @@
 #include "SCharacter.h"
 #include "Animation/AnimMontage.h"
 #include "Camera/CameraComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 
@@ -78,12 +80,34 @@ void ASCharacter::PrimaryAttack() {
 void ASCharacter::PrimaryAttack_TimeElapsed() {
   if (ensure(ProjectileClass)) {
     FVector HandLoc = GetMesh()->GetSocketLocation("Muzzle_01");
-    FTransform SpawnTM = FTransform(GetActorRotation(), HandLoc);
+
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride =
         ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     SpawnParams.Instigator = this;
 
+    FCollisionObjectQueryParams ObjectQueryParams;
+    ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+    ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+    ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(this);
+
+    FHitResult Hit;
+
+    FVector TraceStart = CameraComp->GetComponentLocation();
+
+    FVector TraceEnd = TraceStart + GetControlRotation().Vector() * 5000.0f;
+
+    if (GetWorld()->LineTraceSingleByObjectType(Hit, TraceStart, TraceEnd,
+                                                ObjectQueryParams, Params)) {
+      TraceEnd = Hit.ImpactPoint;
+    }
+
+    FRotator ProjRot = FRotationMatrix::MakeFromX(TraceEnd - HandLoc).Rotator();
+
+    FTransform SpawnTM = FTransform(ProjRot, HandLoc);
     GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
   }
 }
