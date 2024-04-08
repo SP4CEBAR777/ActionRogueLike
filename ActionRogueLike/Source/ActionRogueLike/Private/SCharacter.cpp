@@ -25,6 +25,8 @@ ASCharacter::ASCharacter() {
       CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
   AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
+  AttackAnimDelay = 0.18f;
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +50,10 @@ void ASCharacter::SetupPlayerInputComponent(
 
   PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this,
                                    &ASCharacter::PrimaryAttack);
+  PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this,
+                                   &ASCharacter::BlackHoleAttack);
+  PlayerInputComponent->BindAction("Dash", IE_Pressed, this,
+                                   &ASCharacter::Dash);
   PlayerInputComponent->BindAction("Jump", IE_Pressed, this,
                                    &ASCharacter::Jump);
   PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this,
@@ -74,42 +80,72 @@ void ASCharacter::PrimaryAttack() {
   PlayAnimMontage(AttackAnim);
   GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
                                   &ASCharacter::PrimaryAttack_TimeElapsed,
-                                  0.18f);
+                                  AttackAnimDelay);
 }
 
 void ASCharacter::PrimaryAttack_TimeElapsed() {
-  if (ensure(ProjectileClass)) {
-    FVector HandLoc = GetMesh()->GetSocketLocation("Muzzle_01");
+  SpawnProjectile(ProjectileClass);
+}
+
+void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn) {
+  if (ensure(ClassToSpawn)) {
+    FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride =
         ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     SpawnParams.Instigator = this;
 
-    FCollisionObjectQueryParams ObjectQueryParams;
-    ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-    ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-    ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+    FHitResult Hit;
+    FVector TraceStart = CameraComp->GetComponentLocation();
+    FVector TraceEnd = CameraComp->GetComponentLocation() +
+                       (GetControlRotation().Vector() * 5000);
+
+    FCollisionShape Shape;
+    Shape.SetSphere(20.0f);
 
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(this);
 
-    FHitResult Hit;
+    FCollisionObjectQueryParams ObjParams;
+    ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+    ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
+    ObjParams.AddObjectTypesToQuery(ECC_Pawn);
 
-    FVector TraceStart = CameraComp->GetComponentLocation();
-
-    FVector TraceEnd = TraceStart + GetControlRotation().Vector() * 5000.0f;
-
-    if (GetWorld()->LineTraceSingleByObjectType(Hit, TraceStart, TraceEnd,
-                                                ObjectQueryParams, Params)) {
-      TraceEnd = Hit.ImpactPoint;
+    FRotator ProjRotation;
+    if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd,
+                                            FQuat::Identity, ObjParams, Shape,
+                                            Params)) {
+      ProjRotation =
+          FRotationMatrix::MakeFromX(Hit.ImpactPoint - HandLocation).Rotator();
+    } else {
+      ProjRotation =
+          FRotationMatrix::MakeFromX(TraceEnd - HandLocation).Rotator();
     }
 
-    FRotator ProjRot = FRotationMatrix::MakeFromX(TraceEnd - HandLoc).Rotator();
-
-    FTransform SpawnTM = FTransform(ProjRot, HandLoc);
-    GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+    FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
+    GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
   }
 }
+
+void ASCharacter::BlackHoleAttack() {
+  PlayAnimMontage(AttackAnim);
+  GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
+                                  &ASCharacter::BlackHoleAttack_TimeElapsed,
+                                  AttackAnimDelay);
+}
+
+void ASCharacter::BlackHoleAttack_TimeElapsed() {
+  SpawnProjectile(BlackHoleProjectileCalss);
+}
+
+void ASCharacter::Dash() {
+  PlayAnimMontage(AttackAnim);
+  GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
+                                  &ASCharacter::Dash_TimeElapsed,
+                                  AttackAnimDelay);
+}
+
+void ASCharacter::Dash_TimeElapsed() { SpawnProjectile(DashProjectileClass); }
 
 void ASCharacter::PrimaryInteract() { InteractionComp->PrimaryInteract(); }

@@ -32,8 +32,17 @@ protected:
   UPROPERTY(VisibleAnywhere)
   USInteractionComponent *InteractionComp;
 
+  UPROPERTY(EditDefaultsOnly, Category = "Attack")
+  float AttackAnimDelay;
+
   UPROPERTY(EditAnywhere, Category = "Attack")
-  TSubclassOf<class AActor> ProjectileClass;
+  TSubclassOf<AActor> ProjectileClass;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  TSubclassOf<AActor> BlackHoleProjectileCalss;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  TSubclassOf<AActor> DashProjectileClass;
 
   UPROPERTY(EditAnywhere, Category = "Attack")
   UAnimMontage *AttackAnim;
@@ -46,6 +55,11 @@ protected:
   void MoveRight(float value);
   void PrimaryAttack();
   void PrimaryAttack_TimeElapsed();
+  void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
+  void BlackHoleAttack();
+  void BlackHoleAttack_TimeElapsed();
+  void Dash();
+  void Dash_TimeElapsed();
   void PrimaryInteract();
 
 public:
