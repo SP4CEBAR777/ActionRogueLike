@@ -5,16 +5,14 @@
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Particles/ParticleSystem.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter() {
-  // Set this character to call Tick() every frame.  You can turn this off to
-  // improve performance if you don't need it.
-  PrimaryActorTick.bCanEverTick = true;
-
   SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
   SpringArmComp->SetupAttachment(RootComponent);
 
@@ -27,6 +25,8 @@ ASCharacter::ASCharacter() {
   AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
   AttackAnimDelay = 0.18f;
+
+  HandSocketName = "Muzzle_01";
 }
 
 // Called when the game starts or when spawned
@@ -58,6 +58,9 @@ void ASCharacter::SetupPlayerInputComponent(
                                    &ASCharacter::Jump);
   PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this,
                                    &ASCharacter::PrimaryInteract);
+
+  AttributeComp->OnHealthChanged.AddDynamic(this,
+                                            &ASCharacter::OnHealthChanged);
 }
 
 void ASCharacter::MoveForward(float value) {
@@ -76,8 +79,15 @@ void ASCharacter::MoveRight(float value) {
   AddMovementInput(RightVector, value);
 }
 
-void ASCharacter::PrimaryAttack() {
+void ASCharacter::StartAttackEffect() {
   PlayAnimMontage(AttackAnim);
+  UGameplayStatics::SpawnEmitterAttached(
+      CastingEffect, GetMesh(), HandSocketName, FVector::ZeroVector,
+      FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+}
+
+void ASCharacter::PrimaryAttack() {
+  StartAttackEffect();
   GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
                                   &ASCharacter::PrimaryAttack_TimeElapsed,
                                   AttackAnimDelay);
@@ -89,7 +99,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed() {
 
 void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn) {
   if (ensure(ClassToSpawn)) {
-    FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+    FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride =
@@ -129,7 +139,7 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn) {
 }
 
 void ASCharacter::BlackHoleAttack() {
-  PlayAnimMontage(AttackAnim);
+  StartAttackEffect();
   GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
                                   &ASCharacter::BlackHoleAttack_TimeElapsed,
                                   AttackAnimDelay);
@@ -140,7 +150,7 @@ void ASCharacter::BlackHoleAttack_TimeElapsed() {
 }
 
 void ASCharacter::Dash() {
-  PlayAnimMontage(AttackAnim);
+  StartAttackEffect();
   GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
                                   &ASCharacter::Dash_TimeElapsed,
                                   AttackAnimDelay);
@@ -149,3 +159,19 @@ void ASCharacter::Dash() {
 void ASCharacter::Dash_TimeElapsed() { SpawnProjectile(DashProjectileClass); }
 
 void ASCharacter::PrimaryInteract() { InteractionComp->PrimaryInteract(); }
+
+void ASCharacter::OnHealthChanged(AActor *InstigatorActor,
+                                  USAttributeComponent *OwningComp,
+                                  float NewHealth, float Delta) {
+
+  if (Delta < 0.0f) {
+    GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit",
+                                                  GetWorld()->TimeSeconds);
+  }
+
+  if (NewHealth <= 0.0f && Delta < 0.0f) {
+
+    APlayerController *PC = Cast<APlayerController>(GetController());
+    DisableInput(PC);
+  }
+}

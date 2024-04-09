@@ -9,6 +9,8 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
+class UAudioComponent;
+class USoundCue;
 
 UCLASS(
     ABSTRACT) // 'ABSTRACT' marks this class as incomplete, keeping this out of
@@ -20,6 +22,9 @@ protected:
   UPROPERTY(EditDefaultsOnly, Category = "Effects")
   UParticleSystem *ImpactVFX;
 
+  UPROPERTY(EditDefaultsOnly, Category = "Effects")
+  USoundCue *ImpactSound;
+
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
   USphereComponent *SphereComp;
 
@@ -29,13 +34,14 @@ protected:
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
   UParticleSystemComponent *EffectComp;
 
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+  UAudioComponent *AudioComp;
+
   UFUNCTION()
   virtual void OnActorHit(UPrimitiveComponent *HitComponent, AActor *OtherActor,
                           UPrimitiveComponent *OtherComp, FVector NormalImpulse,
                           const FHitResult &Hit);
 
-  // BlueprintNativeEvent = C++ base implementation, can be expanded in
-  // Blueprints BlueprintCallable to allow child classes to trigger explosions
   UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
   void Explode();
 

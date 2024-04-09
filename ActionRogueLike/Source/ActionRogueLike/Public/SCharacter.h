@@ -11,6 +11,7 @@ class UCameraComponent;
 class USInteractionComponent;
 class UAnimMontage;
 class USAttributeComponent;
+class UParticleSystem;
 
 UCLASS() class ACTIONROGUELIKE_API ASCharacter : public ACharacter {
   GENERATED_BODY()
@@ -46,10 +47,17 @@ protected:
 
   UPROPERTY(EditAnywhere, Category = "Attack")
   UAnimMontage *AttackAnim;
+
   FTimerHandle TimerHandle_PrimaryAttack;
+
+  UPROPERTY(EditDefaultsOnly, Category = "Attack")
+  UParticleSystem *CastingEffect;
 
   UPROPERTY(VisibleAnywhere, BlueprintReadonly, Category = "Components")
   USAttributeComponent *AttributeComp;
+
+  UPROPERTY(VisibleAnywhere, Category = "Effects")
+  FName HandSocketName;
 
   void MoveForward(float value);
   void MoveRight(float value);
@@ -61,6 +69,11 @@ protected:
   void Dash();
   void Dash_TimeElapsed();
   void PrimaryInteract();
+  void StartAttackEffect();
+  UFUNCTION()
+  void OnHealthChanged(AActor *InstigatorActor,
+                       USAttributeComponent *OwningComp, float NewHealth,
+                       float Delta);
 
 public:
   // Called every frame
