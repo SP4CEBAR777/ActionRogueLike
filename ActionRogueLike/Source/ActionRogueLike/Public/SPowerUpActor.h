@@ -7,7 +7,7 @@
 #include "SGameplayInterface.h"
 #include "SPowerUpActor.generated.h"
 
-class UStaticMeshComponent;
+class USphereComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASPowerUpActor : public AActor,
@@ -19,13 +19,13 @@ public:
   ASPowerUpActor();
 
 protected:
-  UPROPERTY(VisibleAnywhere, Category = "Component")
-  UStaticMeshComponent *MeshComp;
-
-  FTimerHandle TimerHandle_CoolDown;
+  UPROPERTY(VisibleAnywhere, Category = "Components")
+  USphereComponent *SphereComp;
 
   UPROPERTY(EditDefaultsOnly, Category = "CoolDown");
   float CoolDownTime;
+
+  FTimerHandle TimerHandle_CoolDownTimer;
 
   UFUNCTION()
   void ShowPowerUp();

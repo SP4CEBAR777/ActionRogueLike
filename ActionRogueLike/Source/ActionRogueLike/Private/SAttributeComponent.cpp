@@ -5,15 +5,14 @@
 
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent() {
-  Health = 100.0f;
   HealthMax = 100.0f;
+  Health = HealthMax;
 }
 
 bool USAttributeComponent::ApplyHealthChange(float Delta) {
   float OldHealth = Health;
 
-  Health += Delta;
-  Health = FMath::Clamp(Health, 0.0f, HealthMax);
+  Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
   float ActualDelta = Health - OldHealth;
 

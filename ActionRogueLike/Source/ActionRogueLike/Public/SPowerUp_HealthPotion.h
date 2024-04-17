@@ -16,6 +16,9 @@ public:
   ASPowerUp_HealthPotion();
 
 protected:
+  UPROPERTY(VisibleAnywhere, Category = "Components")
+  UStaticMeshComponent *MeshComp;
+
   UPROPERTY(EditDefaultsOnly, Category = "Heal")
   float HealAmount;
 

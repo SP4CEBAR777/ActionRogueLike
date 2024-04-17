@@ -3,9 +3,19 @@
 #include "SPowerUp_HealthPotion.h"
 #include "SAttributeComponent.h"
 
-ASPowerUp_HealthPotion::ASPowerUp_HealthPotion() { HealAmount = 100.0f; }
+ASPowerUp_HealthPotion::ASPowerUp_HealthPotion() {
+  MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+  MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  MeshComp->SetupAttachment(RootComponent);
+
+  HealAmount = 100.0f;
+}
 
 void ASPowerUp_HealthPotion::Interact_Implementation(APawn *InstigatorPawn) {
+  if (!ensure(InstigatorPawn)) {
+    return;
+  }
+
   USAttributeComponent *AttributeComp = Cast<USAttributeComponent>(
       InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
 

@@ -39,6 +39,7 @@ void USInteractionComponent::PrimaryInteract() {
   FVector End = EyeLocation + (EyeRotation.Vector() * 1000);
   FCollisionObjectQueryParams ObjectQueryParams;
   ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+
   GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End,
                                           ObjectQueryParams);
 

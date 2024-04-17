@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SPowerUpActor.h"
-#include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ASPowerUpActor::ASPowerUpActor() {
-  MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-  RootComponent = MeshComp;
+  SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
+  RootComponent = SphereComp;
 
   CoolDownTime = 10.0f;
 }
@@ -17,10 +17,13 @@ void ASPowerUpActor::ShowPowerUp() { SetPowerUpState(true); }
 
 void ASPowerUpActor::HideAndCoolDownPowerUp() {
   SetPowerUpState(false);
-  GetWorldTimerManager().SetTimer(TimerHandle_CoolDown, this,
+
+  GetWorldTimerManager().SetTimer(TimerHandle_CoolDownTimer, this,
                                   &ASPowerUpActor::ShowPowerUp, CoolDownTime);
 }
 
 void ASPowerUpActor::SetPowerUpState(bool bShouldActive) {
+  SetActorEnableCollision(bShouldActive);
+
   RootComponent->SetVisibility(bShouldActive, true);
 }
