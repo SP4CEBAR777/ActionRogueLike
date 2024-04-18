@@ -98,7 +98,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed() {
 }
 
 void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn) {
-  if (ensure(ClassToSpawn)) {
+  if (ensureMsgf(ClassToSpawn, TEXT("ClassToSpawn not set!"))) {
     FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
 
     FActorSpawnParameters SpawnParams;
