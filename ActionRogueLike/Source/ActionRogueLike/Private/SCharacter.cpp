@@ -27,6 +27,8 @@ ASCharacter::ASCharacter() {
   AttackAnimDelay = 0.18f;
 
   HandSocketName = "Muzzle_01";
+
+  TimeToHitParamName = "TimeToHit";
 }
 
 // Called when the game starts or when spawned
@@ -165,7 +167,7 @@ void ASCharacter::OnHealthChanged(AActor *InstigatorActor,
                                   float NewHealth, float Delta) {
 
   if (Delta < 0.0f) {
-    GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit",
+    GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName,
                                                   GetWorld()->TimeSeconds);
   }
 

@@ -59,6 +59,9 @@ protected:
   UPROPERTY(VisibleAnywhere, Category = "Effects")
   FName HandSocketName;
 
+  UPROPERTY(VisibleAnywhere, Category = "Effects")
+  FName TimeToHitParamName;
+
   void MoveForward(float value);
   void MoveRight(float value);
   void PrimaryAttack();

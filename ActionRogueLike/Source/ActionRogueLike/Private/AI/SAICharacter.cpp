@@ -5,12 +5,17 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Perception/PawnSensingComponent.h"
+#include "SAttributeComponent.h"
 
 ASAICharacter::ASAICharacter() {
   PawnSensingComp =
       CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 
+  AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
   TargetActorName = "TargetActor";
+
+  AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ASAICharacter::PostInitializeComponents() {
@@ -24,8 +29,5 @@ void ASAICharacter::OnPawnSeen(APawn *Pawn) {
   if (AIC) {
     UBlackboardComponent *BBComp = AIC->GetBlackboardComponent();
     BBComp->SetValueAsObject(TargetActorName, Pawn);
-
-    DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr,
-                    FColor::White, 1.0f);
   }
 }
