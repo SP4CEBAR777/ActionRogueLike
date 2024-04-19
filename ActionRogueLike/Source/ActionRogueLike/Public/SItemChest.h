@@ -22,17 +22,11 @@ public:
   float TargetPitch;
 
 protected:
-  // Called when the game starts or when spawned
-  virtual void BeginPlay() override;
-
   UPROPERTY(VisibleAnywhere, BlueprintReadonly)
   UStaticMeshComponent *LidMesh;
   UPROPERTY(VisibleAnywhere)
   UStaticMeshComponent *BaseMesh;
 
 public:
-  // Called every frame
-  virtual void Tick(float DeltaTime) override;
-
   void Interact_Implementation(APawn *InstigatorPawn);
 };
