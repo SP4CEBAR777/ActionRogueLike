@@ -15,15 +15,15 @@ ASProjectileBase::ASProjectileBase() {
   EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
   EffectComp->SetupAttachment(RootComponent);
 
+  AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+  AudioComp->SetupAttachment(RootComponent);
+
   MoveComp = CreateDefaultSubobject<UProjectileMovementComponent>(
       "ProjectileMoveComp");
   MoveComp->bRotationFollowsVelocity = true;
   MoveComp->bInitialVelocityInLocalSpace = true;
   MoveComp->ProjectileGravityScale = 0.0f;
   MoveComp->InitialSpeed = 8000.0f;
-
-  AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
-  AudioComp->SetupAttachment(RootComponent);
 }
 
 void ASProjectileBase::OnActorHit(UPrimitiveComponent *HitComponent,
@@ -51,7 +51,4 @@ void ASProjectileBase::Explode_Implementation() {
 
 void ASProjectileBase::PostInitializeComponents() {
   Super::PostInitializeComponents();
-  SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-
-  SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnActorHit);
 }

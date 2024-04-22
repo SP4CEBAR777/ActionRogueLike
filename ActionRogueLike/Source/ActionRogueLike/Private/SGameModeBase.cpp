@@ -20,18 +20,18 @@ void ASGameModeBase::StartPlay() {
 }
 
 void ASGameModeBase::SpawnBotTimerElapsed() {
-  int32 NrOfAliveBots = 0;
+  int32 NumOfAliveBots = 0;
   for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It) {
     ASAICharacter *Bot = *It;
 
     USAttributeComponent *AttributeComp =
         USAttributeComponent::GetAttributes(Bot);
     if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
-      ++NrOfAliveBots;
+      ++NumOfAliveBots;
     }
   }
 
-  UE_LOG(LogTemp, Log, TEXT("Found %i alive bots."), NrOfAliveBots);
+  UE_LOG(LogTemp, Log, TEXT("Found %i alive bots."), NumOfAliveBots);
 
   float MaxBotCount = 10.0f;
 
@@ -39,7 +39,7 @@ void ASGameModeBase::SpawnBotTimerElapsed() {
     MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
   }
 
-  if (NrOfAliveBots >= MaxBotCount) {
+  if (NumOfAliveBots >= MaxBotCount) {
     UE_LOG(LogTemp, Log, TEXT("At maximum bot capacity. Skipping bot spawn."));
     return;
   }

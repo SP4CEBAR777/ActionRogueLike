@@ -27,20 +27,12 @@ void ASAICharacter::PostInitializeComponents() {
                                             &ASAICharacter::OnHealthChanged);
 }
 
-void ASAICharacter::OnPawnSeen(APawn *Pawn) {
-  SetTargetActor(Pawn);
-  DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr,
-                  FColor::White, 4.0f, true);
-}
+void ASAICharacter::OnPawnSeen(APawn *Pawn) { SetTargetActor(Pawn); }
 
 void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
                                     USAttributeComponent *OwningComp,
                                     float NewHealth, float Delta) {
   if (Delta < 0.0f) {
-    if (InstigatorActor != this) {
-      SetTargetActor(InstigatorActor);
-    }
-
     if (NewHealth <= 0.0f) {
       // stop BT
       AAIController *AIC = Cast<AAIController>(GetController());
@@ -54,6 +46,12 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
 
       // set lifespan
       SetLifeSpan(10.0f);
+
+      return;
+    }
+
+    if (InstigatorActor != this) {
+      SetTargetActor(InstigatorActor);
     }
   }
 }

@@ -13,10 +13,13 @@ void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent &OwnerComp,
   if (ensure(BlackboardComp)) {
     AActor *TargetActor =
         Cast<AActor>(BlackboardComp->GetValueAsObject("TargetActor"));
+
     if (TargetActor) {
       AAIController *MyController = OwnerComp.GetAIOwner();
+
       if (ensure(MyController)) {
         APawn *AIPawn = MyController->GetPawn();
+
         if (ensure(AIPawn)) {
           float DistanceTo = FVector::Distance(TargetActor->GetActorLocation(),
                                                AIPawn->GetActorLocation());

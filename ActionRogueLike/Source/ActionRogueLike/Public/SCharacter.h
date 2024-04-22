@@ -6,23 +6,48 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
-class USpringArmComponent;
 class UCameraComponent;
+class USpringArmComponent;
 class USInteractionComponent;
 class UAnimMontage;
 class USAttributeComponent;
 class UParticleSystem;
 
-UCLASS() class ACTIONROGUELIKE_API ASCharacter : public ACharacter {
+UCLASS()
+class ACTIONROGUELIKE_API ASCharacter : public ACharacter {
   GENERATED_BODY()
 
-public:
-  // Sets default values for this character's properties
-  ASCharacter();
-
 protected:
-  // Called when the game starts or when spawned
-  virtual void BeginPlay() override;
+  /* VisibleAnywhere = read-only, still useful to view in-editor and enforce a
+   * convention. */
+  UPROPERTY(VisibleAnywhere, Category = "Effects")
+  FName TimeToHitParamName;
+
+  UPROPERTY(VisibleAnywhere, Category = "Effects")
+  FName HandSocketName;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  TSubclassOf<AActor> ProjectileClass;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  TSubclassOf<AActor> BlackHoleProjectileClass;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  TSubclassOf<AActor> DashProjectileClass;
+
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  UAnimMontage *AttackAnim;
+
+  /* Particle System played during attack animation */
+  UPROPERTY(EditAnywhere, Category = "Attack")
+  UParticleSystem *CastingEffect;
+
+  FTimerHandle TimerHandle_PrimaryAttack;
+  FTimerHandle TimerHandle_BlackholeAttack;
+  FTimerHandle TimerHandle_Dash;
+
+  UPROPERTY(EditDefaultsOnly, Category = "Attack")
+  float AttackAnimDelay;
 
   UPROPERTY(VisibleAnywhere)
   USpringArmComponent *SpringArmComp;
@@ -33,56 +58,42 @@ protected:
   UPROPERTY(VisibleAnywhere)
   USInteractionComponent *InteractionComp;
 
-  UPROPERTY(EditDefaultsOnly, Category = "Attack")
-  float AttackAnimDelay;
-
-  UPROPERTY(EditAnywhere, Category = "Attack")
-  TSubclassOf<AActor> ProjectileClass;
-
-  UPROPERTY(EditAnywhere, Category = "Attack")
-  TSubclassOf<AActor> BlackHoleProjectileCalss;
-
-  UPROPERTY(EditAnywhere, Category = "Attack")
-  TSubclassOf<AActor> DashProjectileClass;
-
-  UPROPERTY(EditAnywhere, Category = "Attack")
-  UAnimMontage *AttackAnim;
-
-  FTimerHandle TimerHandle_PrimaryAttack;
-
-  UPROPERTY(EditDefaultsOnly, Category = "Attack")
-  UParticleSystem *CastingEffect;
-
-  UPROPERTY(VisibleAnywhere, BlueprintReadonly, Category = "Components")
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
   USAttributeComponent *AttributeComp;
 
-  UPROPERTY(VisibleAnywhere, Category = "Effects")
-  FName HandSocketName;
+  void MoveForward(float Value);
 
-  UPROPERTY(VisibleAnywhere, Category = "Effects")
-  FName TimeToHitParamName;
+  void MoveRight(float Value);
 
-  void MoveForward(float value);
-  void MoveRight(float value);
   void PrimaryAttack();
+
   void PrimaryAttack_TimeElapsed();
-  void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
+
   void BlackHoleAttack();
-  void BlackHoleAttack_TimeElapsed();
+
+  void BlackholeAttack_TimeElapsed();
+
   void Dash();
+
   void Dash_TimeElapsed();
+
+  void StartAttackEffects();
+
+  // Re-use spawn logic between attacks
+  void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
+
   void PrimaryInteract();
-  void StartAttackEffect();
+
   UFUNCTION()
   void OnHealthChanged(AActor *InstigatorActor,
                        USAttributeComponent *OwningComp, float NewHealth,
                        float Delta);
 
-public:
-  // Called every frame
-  virtual void Tick(float DeltaTime) override;
+  virtual void PostInitializeComponents() override;
 
-  // Called to bind functionality to input
+public:
+  ASCharacter();
+
   virtual void SetupPlayerInputComponent(
       class UInputComponent *PlayerInputComponent) override;
 };

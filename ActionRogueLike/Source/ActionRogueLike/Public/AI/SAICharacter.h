@@ -17,24 +17,27 @@ public:
   ASAICharacter();
 
 protected:
-  virtual void PostInitializeComponents() override;
-
-  UPROPERTY(VisibleAnywhere, Category = "AI")
+  UPROPERTY(VisibleAnywhere, Category = "Components")
   UPawnSensingComponent *PawnSensingComp;
 
-  UPROPERTY(VisibleAnywhere, Category = "AI")
-  FName TargetActorKey;
-
-  UPROPERTY(VisibleAnywhere, BlueprintReadonly, Category = "Components")
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
   USAttributeComponent *AttributeComp;
 
-  UFUNCTION()
-  void OnPawnSeen(APawn *Pawn);
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+  FName TargetActorKey;
+
+  UPROPERTY(VisibleAnywhere, Category = "Effects")
+  FName TimeToHitParamName;
+
+  void SetTargetActor(AActor *NewTarget);
+
+  virtual void PostInitializeComponents() override;
 
   UFUNCTION()
   void OnHealthChanged(AActor *InstigatorActor,
                        USAttributeComponent *OwningComp, float NewHealth,
                        float Delta);
 
-  void SetTargetActor(AActor *TargetActor);
+  UFUNCTION()
+  void OnPawnSeen(APawn *Pawn);
 };

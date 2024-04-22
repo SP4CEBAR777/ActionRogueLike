@@ -4,10 +4,13 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
+#include "SAttributeComponent.h"
+
+USBTTask_RangedAttack::USBTTask_RangedAttack() { MaxBulletSpread = 2.0f; }
 
 EBTNodeResult::Type
-USBTTaskNode_RamgedAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp,
-                                       uint8 *NodeMemory) {
+USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp,
+                                   uint8 *NodeMemory) {
   AAIController *MyController = OwnerComp.GetAIOwner();
   if (ensure(MyController)) {
     ACharacter *MyPawn = Cast<ACharacter>(MyController->GetPawn());
@@ -15,26 +18,31 @@ USBTTaskNode_RamgedAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp,
       return EBTNodeResult::Failed;
     }
 
+    FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_01");
+
     AActor *TargetActor = Cast<AActor>(
         OwnerComp.GetBlackboardComponent()->GetValueAsObject("TargetActor"));
+
     if (TargetActor == nullptr) {
       return EBTNodeResult::Failed;
     }
 
-    FVector MuzzleLocation = MyPawn->GetMesh()->GetSocketLocation("Muzzle_01");
     FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
     FRotator MuzzleRotation = Direction.Rotation();
 
-    FActorSpawnParameters params;
-    params.Instigator = MyPawn;
-    params.SpawnCollisionHandlingOverride =
-        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    MuzzleRotation.Pitch += FMath::RandRange(0.0f, MaxBulletSpread);
+    MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 
-    ensure(ProjectileClass);
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride =
+        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    Params.Instigator = MyPawn;
+
     AActor *NewProj = GetWorld()->SpawnActor<AActor>(
-        ProjectileClass, MuzzleLocation, MuzzleRotation);
+        ProjectileClass, MuzzleLocation, MuzzleRotation, Params);
+
     return NewProj ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
   }
 
-  return EBTNodeResult::Type();
+  return EBTNodeResult::Failed;
 }
