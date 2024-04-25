@@ -10,6 +10,7 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class AController;
 
 /**
  *
@@ -47,4 +48,10 @@ public:
 
   UFUNCTION(Exec)
   void KillAll();
+
+  UFUNCTION(BlueprintCallable)
+  virtual void OnActorKilled(AActor *VictimActor, AActor *Killer);
+
+  UFUNCTION()
+  void RespawnPlayerElapsed(AController *Controller);
 };

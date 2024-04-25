@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 
@@ -27,6 +28,8 @@ ASCharacter::ASCharacter() {
 
   AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
+  ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
+
   GetCharacterMovement()->bOrientRotationToMovement = true;
   bUseControllerRotationYaw = false;
 
@@ -42,6 +45,10 @@ void ASCharacter::PostInitializeComponents() {
                                             &ASCharacter::OnHealthChanged);
 }
 
+FVector ASCharacter::GetPawnViewLocation() const {
+  return CameraComp->GetComponentLocation();
+}
+
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(
     UInputComponent *PlayerInputComponent) {
@@ -54,6 +61,12 @@ void ASCharacter::SetupPlayerInputComponent(
   PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
   PlayerInputComponent->BindAxis("LookUp", this,
                                  &APawn::AddControllerPitchInput);
+
+  PlayerInputComponent->BindAction("Sprint", IE_Pressed, this,
+                                   &ASCharacter::SprintStart);
+
+  PlayerInputComponent->BindAction("Sprint", IE_Released, this,
+                                   &ASCharacter::SprintStop);
 
   PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this,
                                    &ASCharacter::PrimaryAttack);
@@ -84,6 +97,12 @@ void ASCharacter::MoveRight(float Value) {
 
   AddMovementInput(RightVector, Value);
 }
+
+void ASCharacter::SprintStart() {
+  ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::SprintStop() { ActionComp->StopActionByName(this, "Sprint"); }
 
 void ASCharacter::PrimaryAttack() {
   StartAttackEffects();

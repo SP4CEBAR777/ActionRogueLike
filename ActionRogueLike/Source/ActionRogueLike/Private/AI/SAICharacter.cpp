@@ -4,7 +4,9 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "SAttributeComponent.h"
 #include "SWorldUserWidget.h"
@@ -20,6 +22,10 @@ ASAICharacter::ASAICharacter() {
   TimeToHitParamName = "TimeToHit";
 
   AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+  GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic,
+                                                       ECR_Ignore);
+  GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void ASAICharacter::PostInitializeComponents() {
@@ -36,6 +42,9 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
                                     USAttributeComponent *OwningComp,
                                     float NewHealth, float Delta) {
   if (Delta < 0.0f) {
+    if (InstigatorActor != this) {
+      SetTargetActor(InstigatorActor);
+    }
 
     GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName,
                                                   GetWorld()->TimeSeconds);
@@ -49,6 +58,7 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
       }
     }
 
+    // Killed
     if (NewHealth <= 0.0f) {
       // stop BT
       AAIController *AIC = Cast<AAIController>(GetController());
@@ -60,17 +70,12 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
       GetMesh()->SetAllBodiesSimulatePhysics(true);
       GetMesh()->SetCollisionProfileName("Ragdoll");
 
+      GetCapsuleComponent()->SetCollisionEnabled(
+          ECollisionEnabled::NoCollision);
+      GetCharacterMovement()->DisableMovement();
+
       // set lifespan
       SetLifeSpan(10.0f);
-
-      return;
-    }
-
-    if (InstigatorActor != this) {
-      SetTargetActor(InstigatorActor);
-      AAIController *AIC = Cast<AAIController>(GetController());
-      AActor *Target = Cast<AActor>(
-          AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
     }
   }
 }

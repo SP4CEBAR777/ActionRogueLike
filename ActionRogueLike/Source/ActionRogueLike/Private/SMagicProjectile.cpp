@@ -3,6 +3,7 @@
 #include "SMagicProjectile.h"
 #include "Components/SphereComponent.h"
 #include "SAttributeComponent.h"
+#include "SGameplayFunctionLibrary.h"
 
 ASMagicProjectile::ASMagicProjectile() {
   SphereComp->SetSphereRadius(20.0f);
@@ -18,11 +19,17 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent *OverlappedComponent,
                                        int32 OtherBodyIndex, bool bFromSweep,
                                        const FHitResult &SweepResult) {
   if (OtherActor && OtherActor != GetInstigator()) {
+    /*
     USAttributeComponent *AttributeComp = Cast<USAttributeComponent>(
         OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
     if (AttributeComp) {
       AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
 
+      Super::Explode();
+    }
+    */
+    if (USGameplayFunctionLibrary::ApplyDirectionalDamage(
+            GetInstigator(), OtherActor, DamageAmount, SweepResult)) {
       Super::Explode();
     }
   }
