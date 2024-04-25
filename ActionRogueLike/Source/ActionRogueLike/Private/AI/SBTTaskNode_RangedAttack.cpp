@@ -27,6 +27,10 @@ USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp,
       return EBTNodeResult::Failed;
     }
 
+    if (!USAttributeComponent::IsActorAlive(TargetActor)) {
+      return EBTNodeResult::Failed;
+    }
+
     FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
     FRotator MuzzleRotation = Direction.Rotation();
 

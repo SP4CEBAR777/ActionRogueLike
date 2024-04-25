@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "Perception/PawnSensingComponent.h"
 #include "SAttributeComponent.h"
+#include "SWorldUserWidget.h"
 
 ASAICharacter::ASAICharacter() {
   PawnSensingComp =
@@ -15,6 +16,8 @@ ASAICharacter::ASAICharacter() {
   AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
   TargetActorKey = "TargetActor";
+
+  TimeToHitParamName = "TimeToHit";
 
   AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -33,6 +36,19 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
                                     USAttributeComponent *OwningComp,
                                     float NewHealth, float Delta) {
   if (Delta < 0.0f) {
+
+    GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName,
+                                                  GetWorld()->TimeSeconds);
+
+    if (ActiveHealthBar == nullptr) {
+      ActiveHealthBar =
+          CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+      if (ActiveHealthBar) {
+        ActiveHealthBar->AttachedActor = this;
+        ActiveHealthBar->AddToViewport();
+      }
+    }
+
     if (NewHealth <= 0.0f) {
       // stop BT
       AAIController *AIC = Cast<AAIController>(GetController());
@@ -52,6 +68,9 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
 
     if (InstigatorActor != this) {
       SetTargetActor(InstigatorActor);
+      AAIController *AIC = Cast<AAIController>(GetController());
+      AActor *Target = Cast<AActor>(
+          AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
     }
   }
 }
