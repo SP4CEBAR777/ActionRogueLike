@@ -9,29 +9,31 @@
 class USAction;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class ACTIONROGUELIKE_API USActionComponent : public UActionComponent {
+class ACTIONROGUELIKE_API USActionComponent : public UActorComponent {
   GENERATED_BODY()
 
 public:
   USActionComponent();
 
-  UFUNCTION(BlueprintCallable, Category = "Actions")
+  UFUNCTION(BlueprintCallable, Category = "Action")
   void AddAction(TSubclassOf<USAction> ActionClass);
 
-  UFUNCTION(BlueprintCallable, Category = "Actions")
+  UFUNCTION(BlueprintCallable, Category = "Action")
   bool StartActionByName(AActor *Instigator, FName ActionName);
 
-  UFUNCTION(BlueprintCallable, Category = "Actions")
+  UFUNCTION(BlueprintCallable, Category = "Action")
   bool StopActionByName(AActor *Instigator, FName ActionName);
 
 protected:
   virtual void BeginPlay() override;
 
+  UPROPERTY(EditAnywhere, Category = "Actions")
+  TArray<TSubclassOf<USAction>> DefaultActions;
+
   UPROPERTY()
   TArray<USAction *> Actions;
 
 public:
-  // Called every frame
   virtual void
   TickComponent(float DeltaTime, ELevelTick TickType,
                 FActorComponentTickFunction *ThisTickFunction) override;

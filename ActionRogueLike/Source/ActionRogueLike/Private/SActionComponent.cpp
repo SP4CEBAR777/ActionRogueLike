@@ -3,11 +3,15 @@
 #include "SActionComponent.h"
 #include "SAction.h"
 
-USActionComponent::USActionComponent() {
-  PrimaryComponentTick.bCanEverTick = true;
-}
+USActionComponent::USActionComponent() {}
 
-void USActionComponent::BeginPlay() { Super::BeginPlay(); }
+void USActionComponent::BeginPlay() {
+  Super::BeginPlay();
+
+  for (TSubclassOf<USAction> ActionClass : DefaultActions) {
+    AddAction(ActionClass);
+  }
+}
 
 void USActionComponent::TickComponent(
     float DeltaTime, ELevelTick TickType,

@@ -10,10 +10,7 @@
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 
-// Sets default values
 ASCharacter::ASCharacter() {
-  // Set this character to call Tick() every frame.  You can turn this off to
-  // improve performance if you don't need it.
   PrimaryActorTick.bCanEverTick = true;
 
   SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
@@ -33,9 +30,7 @@ ASCharacter::ASCharacter() {
   GetCharacterMovement()->bOrientRotationToMovement = true;
   bUseControllerRotationYaw = false;
 
-  AttackAnimDelay = 0.2f;
   TimeToHitParamName = "TimeToHit";
-  HandSocketName = "Muzzle_01";
 }
 
 void ASCharacter::PostInitializeComponents() {
@@ -49,7 +44,6 @@ FVector ASCharacter::GetPawnViewLocation() const {
   return CameraComp->GetComponentLocation();
 }
 
-// Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(
     UInputComponent *PlayerInputComponent) {
   Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -105,86 +99,14 @@ void ASCharacter::SprintStart() {
 void ASCharacter::SprintStop() { ActionComp->StopActionByName(this, "Sprint"); }
 
 void ASCharacter::PrimaryAttack() {
-  StartAttackEffects();
-
-  GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this,
-                                  &ASCharacter::PrimaryAttack_TimeElapsed,
-                                  AttackAnimDelay);
-}
-
-void ASCharacter::PrimaryAttack_TimeElapsed() {
-  SpawnProjectile(ProjectileClass);
+  ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ASCharacter::BlackHoleAttack() {
-  StartAttackEffects();
-
-  GetWorldTimerManager().SetTimer(TimerHandle_BlackholeAttack, this,
-                                  &ASCharacter::BlackholeAttack_TimeElapsed,
-                                  AttackAnimDelay);
+  ActionComp->StartActionByName(this, "BlackHoleAttack");
 }
 
-void ASCharacter::BlackholeAttack_TimeElapsed() {
-  SpawnProjectile(BlackHoleProjectileClass);
-}
-
-void ASCharacter::Dash() {
-  StartAttackEffects();
-
-  GetWorldTimerManager().SetTimer(
-      TimerHandle_Dash, this, &ASCharacter::Dash_TimeElapsed, AttackAnimDelay);
-}
-
-void ASCharacter::Dash_TimeElapsed() { SpawnProjectile(DashProjectileClass); }
-
-void ASCharacter::StartAttackEffects() {
-  PlayAnimMontage(AttackAnim);
-
-  UGameplayStatics::SpawnEmitterAttached(
-      CastingEffect, GetMesh(), HandSocketName, FVector::ZeroVector,
-      FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-}
-
-void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn) {
-  if (ensureAlways(ClassToSpawn)) {
-    FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
-
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride =
-        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    SpawnParams.Instigator = this;
-
-    FCollisionShape Shape;
-    Shape.SetSphere(20.0f);
-
-    FCollisionQueryParams Params;
-    Params.AddIgnoredActor(this);
-
-    FCollisionObjectQueryParams ObjParams;
-    ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-    ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
-    ObjParams.AddObjectTypesToQuery(ECC_Pawn);
-
-    FVector TraceStart = CameraComp->GetComponentLocation();
-
-    FVector TraceEnd = CameraComp->GetComponentLocation() +
-                       (GetControlRotation().Vector() * 5000);
-
-    FHitResult Hit;
-
-    if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd,
-                                            FQuat::Identity, ObjParams, Shape,
-                                            Params)) {
-      TraceEnd = Hit.ImpactPoint;
-    }
-
-    FRotator ProjRotation =
-        FRotationMatrix::MakeFromX(TraceEnd - HandLocation).Rotator();
-
-    FTransform SpawnTM = FTransform(ProjRotation, HandLocation);
-    GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
-  }
-}
+void ASCharacter::Dash() { ActionComp->StartActionByName(this, "Dash"); }
 
 void ASCharacter::PrimaryInteract() {
   if (InteractionComp) {
