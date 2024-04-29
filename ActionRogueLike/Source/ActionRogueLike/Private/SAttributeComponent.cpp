@@ -5,7 +5,7 @@
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(
     TEXT("su.DamageMultiplier"), 1.0f,
-    TEXT("Global damage modifier for SAttributeComponent."), ECVF_Cheat);
+    TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat);
 
 USAttributeComponent::USAttributeComponent() {
   HealthMax = 100;

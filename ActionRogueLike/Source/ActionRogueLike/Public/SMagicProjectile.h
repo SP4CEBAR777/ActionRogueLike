@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "SProjectileBase.h"
 #include "SMagicProjectile.generated.h"
 
@@ -11,6 +12,9 @@ class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase {
 protected:
   UPROPERTY(EditDefaultsOnly, Category = "Damage")
   float DamageAmount;
+
+  UPROPERTY(EditDefaultsOnly, Category = "Tag")
+  FGameplayTag ParryTag;
 
   UFUNCTION()
   void OnActorOverlap(UPrimitiveComponent *OverlappedComponent,

@@ -4,6 +4,7 @@
 
 #include "Components/ActorComponent.h"
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "SActionComponent.generated.h"
 
 class USAction;
@@ -23,6 +24,9 @@ public:
 
   UFUNCTION(BlueprintCallable, Category = "Action")
   bool StopActionByName(AActor *Instigator, FName ActionName);
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
+  FGameplayTagContainer ActiveGameplayTags;
 
 protected:
   virtual void BeginPlay() override;
