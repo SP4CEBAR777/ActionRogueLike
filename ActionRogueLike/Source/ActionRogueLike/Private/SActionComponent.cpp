@@ -3,9 +3,7 @@
 #include "SActionComponent.h"
 #include "SAction.h"
 
-USActionComponent::USActionComponent() {
-  PrimaryComponentTick.bCanEverTick = true;
-}
+USActionComponent::USActionComponent() {}
 
 void USActionComponent::BeginPlay() {
   Super::BeginPlay();
@@ -19,10 +17,6 @@ void USActionComponent::TickComponent(
     float DeltaTime, ELevelTick TickType,
     FActorComponentTickFunction *ThisTickFunction) {
   Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-  FString DebugMsg =
-      GetNameSafe(GetOwner()) + ": " + ActiveGameplayTags.ToStringSimple();
-  GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Yellow, DebugMsg);
 }
 
 void USActionComponent::AddAction(TSubclassOf<USAction> ActionClass) {
@@ -58,8 +52,8 @@ bool USActionComponent::StopActionByName(AActor *Instigator, FName ActionName) {
   for (USAction *Action : Actions) {
     if (Action && Action->ActionName == ActionName) {
       if (Action->IsRunning()) {
-      Action->StopAction(Instigator);
-      return true;
+        Action->StopAction(Instigator);
+        return true;
       }
     }
   }

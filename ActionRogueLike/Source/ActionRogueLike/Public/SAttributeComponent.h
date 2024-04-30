@@ -45,8 +45,6 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
   float HealthMax;
 
-  // HealthMax, Stamina, Strength
-
 public:
   UFUNCTION(BlueprintCallable)
   bool IsAlive() const;

@@ -16,11 +16,11 @@ public:
   ASPowerUp_HealthPotion();
 
 protected:
-  UPROPERTY(VisibleAnywhere, Category = "Components")
-  UStaticMeshComponent *MeshComp;
-
-  UPROPERTY(EditDefaultsOnly, Category = "Heal")
+  UPROPERTY(EditDefaultsOnly, Category = "HealthPotion")
   float HealAmount;
+
+  UPROPERTY(EditDefaultsOnly, Category = "HealthPotion")
+  int32 CreditCost;
 
 public:
   void Interact_Implementation(APawn *InstigatorPawn) override;

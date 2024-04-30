@@ -22,6 +22,9 @@ protected:
   UPROPERTY(VisibleAnywhere, Category = "Components")
   USphereComponent *SphereComp;
 
+  UPROPERTY(VisibleAnywhere, Category = "Components")
+  UStaticMeshComponent *MeshComp;
+
   UPROPERTY(EditDefaultsOnly, Category = "CoolDown");
   float CoolDownTime;
 

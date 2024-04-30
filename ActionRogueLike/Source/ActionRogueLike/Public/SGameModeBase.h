@@ -24,22 +24,41 @@ protected:
   TSubclassOf<AActor> MinionClass;
 
   UPROPERTY(EditDefaultsOnly, Category = "AI")
+  TArray<TSubclassOf<AActor>> PowerupClasses;
+
+  UPROPERTY(EditDefaultsOnly, Category = "AI")
   UEnvQuery *SpawnBotQuery;
+
+  UPROPERTY(EditDefaultsOnly, Category = "AI")
+  UEnvQuery *SpawnPowerupQuery;
 
   UPROPERTY(EditDefaultsOnly, Category = "AI")
   UCurveFloat *DifficultyCurve;
 
   FTimerHandle TimerHandle_SpawnBots;
 
-  UPROPERTY(EditDefaultsOnly, Category = "AI")
-  float SpawnTimerInterval;
+  UPROPERTY(EditDefaultsOnly, Category = "AI") float SpawnBotTimerInterval;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+  int32 CreditsPerKill;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+  int32 MaxPowerupCount;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+  int32 MinPowerupDistance;
 
   UFUNCTION()
   void SpawnBotTimerElapsed();
 
   UFUNCTION()
-  void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper *QueryInstance,
-                        EEnvQueryStatus::Type QueryStatus);
+  void
+  OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper *QueryInstance,
+                           EEnvQueryStatus::Type QueryStatus);
+  UFUNCTION()
+  void
+  OnSpawnPowerupQueryCompleted(UEnvQueryInstanceBlueprintWrapper *QueryInstance,
+                               EEnvQueryStatus::Type QueryStatus);
 
 public:
   ASGameModeBase();

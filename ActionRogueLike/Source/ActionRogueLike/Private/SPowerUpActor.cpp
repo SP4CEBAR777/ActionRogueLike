@@ -7,6 +7,10 @@
 ASPowerUpActor::ASPowerUpActor() {
   SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
   RootComponent = SphereComp;
+  MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
+  MeshComp->SetupAttachment(RootComponent);
+
+  MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
   CoolDownTime = 10.0f;
 }
