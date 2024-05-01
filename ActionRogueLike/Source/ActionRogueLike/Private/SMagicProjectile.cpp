@@ -4,6 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "SActionComponent.h"
+#include "SActionEffect.h"
 #include "SAttributeComponent.h"
 #include "SGameplayFunctionLibrary.h"
 
@@ -23,6 +24,7 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent *OverlappedComponent,
   if (OtherActor && OtherActor != GetInstigator()) {
     USActionComponent *ActionComp = Cast<USActionComponent>(
         OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
+    // Parry
     if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag)) {
       MoveComp->Velocity = -MoveComp->Velocity;
 
@@ -30,9 +32,14 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent *OverlappedComponent,
       return;
     }
 
+    // Damge & Explode
     if (USGameplayFunctionLibrary::ApplyDirectionalDamage(
             GetInstigator(), OtherActor, DamageAmount, SweepResult)) {
       Super::Explode();
+
+      if (ActionComp) {
+        ActionComp->AddAction(GetInstigator(), BurningActionClass);
+      }
     }
   }
 }

@@ -9,7 +9,7 @@ void USActionComponent::BeginPlay() {
   Super::BeginPlay();
 
   for (TSubclassOf<USAction> ActionClass : DefaultActions) {
-    AddAction(ActionClass);
+    AddAction(GetOwner(), ActionClass);
   }
 }
 
@@ -19,7 +19,8 @@ void USActionComponent::TickComponent(
   Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void USActionComponent::AddAction(TSubclassOf<USAction> ActionClass) {
+void USActionComponent::AddAction(AActor *Instigator,
+                                  TSubclassOf<USAction> ActionClass) {
   if (!ensure(ActionClass)) {
     return;
   }
@@ -28,6 +29,18 @@ void USActionComponent::AddAction(TSubclassOf<USAction> ActionClass) {
   if (ensure(NewAction)) {
     Actions.Add(NewAction);
   }
+
+  if (NewAction->bIsAutoStart && ensure(NewAction->CanStart(Instigator))) {
+    NewAction->StartAction(Instigator);
+  }
+}
+
+void USActionComponent::RemoveAction(USAction *ActionClass) {
+  if (!ensure(ActionClass && !ActionClass->IsRunning())) {
+    return;
+  }
+
+  Actions.Remove(ActionClass);
 }
 
 bool USActionComponent::StartActionByName(AActor *Instigator,

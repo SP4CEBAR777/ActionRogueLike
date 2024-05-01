@@ -5,16 +5,19 @@
 #include "SProjectileBase.h"
 #include "SMagicProjectile.generated.h"
 
-UCLASS()
-class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase {
+class USActionEffect;
+
+UCLASS() class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase {
   GENERATED_BODY()
 
 protected:
   UPROPERTY(EditDefaultsOnly, Category = "Damage")
   float DamageAmount;
 
-  UPROPERTY(EditDefaultsOnly, Category = "Tag")
-  FGameplayTag ParryTag;
+  UPROPERTY(EditDefaultsOnly, Category = "Damage")
+  TSubclassOf<USActionEffect> BurningActionClass;
+
+  UPROPERTY(EditDefaultsOnly, Category = "Tag") FGameplayTag ParryTag;
 
   UFUNCTION()
   void OnActorOverlap(UPrimitiveComponent *OverlappedComponent,
