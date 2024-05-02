@@ -37,6 +37,10 @@ protected:
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
   USActionComponent *ActionComp;
 
+  // Has to be negative
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+  float RageFraction;
+
   void MoveForward(float Value);
 
   void MoveRight(float Value);

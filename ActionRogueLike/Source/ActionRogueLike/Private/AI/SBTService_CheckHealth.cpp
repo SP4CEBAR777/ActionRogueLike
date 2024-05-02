@@ -17,7 +17,7 @@ void USBTService_CheckHealth::TickNode(UBehaviorTreeComponent &OwnerComp,
     if (ensure(AIPawn)) {
       USAttributeComponent *AttributeComp =
           USAttributeComponent::GetAttributes(AIPawn);
-      float CurrHealth = AttributeComp->GetCurrHealth();
+      float CurrHealth = AttributeComp->GetHealth();
       float MaxHealth = AttributeComp->GetHealthMax();
       if (CurrHealth / MaxHealth <= LowHealthFraction) {
         BlackboardComp->SetValueAsBool(LowHealthKey.SelectedKeyName, true);

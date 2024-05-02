@@ -28,6 +28,9 @@ public:
   UFUNCTION(BlueprintCallable, Category = "Action")
   bool StopActionByName(AActor *Instigator, FName ActionName);
 
+  UFUNCTION(BlueprintCallable, Category = "Action")
+  USAction *GetAction(TSubclassOf<USAction> ActionToFind) const;
+
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
   FGameplayTagContainer ActiveGameplayTags;
 

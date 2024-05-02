@@ -83,9 +83,32 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
   }
 }
 
+AActor *ASAICharacter::GetTargetActor() const {
+  AAIController *AIC = Cast<AAIController>(GetController());
+  if (AIC) {
+    AActor *MyActor = Cast<AActor>(
+        AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
+    if (MyActor) {
+      return MyActor;
+    }
+  }
+  return nullptr;
+}
+
 void ASAICharacter::SetTargetActor(AActor *NewTarget) {
   AAIController *AIC = Cast<AAIController>(GetController());
   if (AIC) {
+    if (NewTarget != GetTargetActor()) {
+      USWorldUserWidget *ActiveEnemySpottedUI =
+          CreateWidget<USWorldUserWidget>(GetWorld(), EnemySpottedWidgetClass);
+      if (ActiveEnemySpottedUI) {
+        ActiveEnemySpottedUI->AttachedActor = this;
+        ActiveEnemySpottedUI->AddToViewport();
+        if (ensureMsgf(EnemySpottedSound, TEXT("EnemySpottedSound not set"))) {
+          ActiveEnemySpottedUI->PlaySound(EnemySpottedSound);
+        }
+      }
+    }
     AIC->GetBlackboardComponent()->SetValueAsObject(TargetActorKey, NewTarget);
   }
 }

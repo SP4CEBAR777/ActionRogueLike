@@ -31,6 +31,8 @@ ASCharacter::ASCharacter() {
   bUseControllerRotationYaw = false;
 
   TimeToHitParamName = "TimeToHit";
+
+  RageFraction = -0.1f;
 }
 
 void ASCharacter::PostInitializeComponents() {
@@ -120,6 +122,8 @@ void ASCharacter::OnHealthChanged(AActor *InstigatorActor,
   if (Delta < 0.0f) {
     GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName,
                                                   GetWorld()->TimeSeconds);
+
+    OwningComp->ApplyRageChange(Delta * RageFraction);
   }
 
   if (NewHealth <= 0.0f && Delta < 0.0f) {
