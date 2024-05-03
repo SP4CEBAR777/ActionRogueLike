@@ -15,18 +15,23 @@ class ACTIONROGUELIKE_API ASItemChest : public AActor,
   GENERATED_BODY()
 
 public:
-  // Sets default values for this actor's properties
   ASItemChest();
 
   UPROPERTY(EditDefaultsOnly)
   float TargetPitch;
 
+  void Interact_Implementation(APawn *InstigatorPawn);
+
 protected:
   UPROPERTY(VisibleAnywhere, BlueprintReadonly)
   UStaticMeshComponent *LidMesh;
+
   UPROPERTY(VisibleAnywhere)
   UStaticMeshComponent *BaseMesh;
 
-public:
-  void Interact_Implementation(APawn *InstigatorPawn);
+  UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadonly) // RepNotify
+  bool bLidOpened;
+
+  UFUNCTION()
+  void OnRep_LidOpened();
 };

@@ -12,7 +12,7 @@
 #include "SPlayerState.h"
 
 static TAutoConsoleVariable<bool>
-    CVarSpawnBots(TEXT("su.SpawnBots"), true,
+    CVarSpawnBots(TEXT("su.SpawnBots"), false,
                   TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
 ASGameModeBase::ASGameModeBase() {

@@ -23,20 +23,13 @@ void USInteractionComponent::TickComponent(
     FActorComponentTickFunction *ThisTickFunction) {
   Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-  FindBestInteractable();
-}
-
-void USInteractionComponent::PrimaryInteract() {
-  if (FocusActor == nullptr) {
-    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,
-                                     "No Focus Actor to Interact");
-    return;
-  }
-
   APawn *MyPawn = Cast<APawn>(GetOwner());
-
-  ISGameplayInterface::Execute_Interact(FocusActor, MyPawn);
+  if (MyPawn->IsLocallyControlled()) {
+    FindBestInteractable();
+  }
 }
+
+void USInteractionComponent::PrimaryInteract() { ServerInteract(FocusActor); }
 
 void USInteractionComponent::FindBestInteractable() {
   bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
@@ -102,4 +95,16 @@ void USInteractionComponent::FindBestInteractable() {
     DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0,
                   2.0f);
   }
+}
+
+void USInteractionComponent::ServerInteract_Implementation(AActor *InFocus) {
+  if (InFocus == nullptr) {
+    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,
+                                     "No Focus Actor to Interact");
+    return;
+  }
+
+  APawn *MyPawn = Cast<APawn>(GetOwner());
+
+  ISGameplayInterface::Execute_Interact(InFocus, MyPawn);
 }
