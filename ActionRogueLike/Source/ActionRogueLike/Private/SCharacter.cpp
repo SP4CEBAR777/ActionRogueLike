@@ -123,7 +123,7 @@ void ASCharacter::OnHealthChanged(AActor *InstigatorActor,
     GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName,
                                                   GetWorld()->TimeSeconds);
 
-    OwningComp->ApplyRageChange(Delta * RageFraction);
+    OwningComp->ApplyRageChange(InstigatorActor, Delta * RageFraction);
   }
 
   if (NewHealth <= 0.0f && Delta < 0.0f) {

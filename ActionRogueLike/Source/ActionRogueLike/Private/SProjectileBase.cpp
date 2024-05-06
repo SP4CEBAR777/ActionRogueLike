@@ -24,6 +24,8 @@ ASProjectileBase::ASProjectileBase() {
   MoveComp->bInitialVelocityInLocalSpace = true;
   MoveComp->ProjectileGravityScale = 0.0f;
   MoveComp->InitialSpeed = 8000.0f;
+
+  SetReplicates(true);
 }
 
 void ASProjectileBase::OnActorHit(UPrimitiveComponent *HitComponent,

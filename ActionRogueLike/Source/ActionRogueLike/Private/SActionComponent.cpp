@@ -1,10 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SActionComponent.h"
+#include "../ActionRogueLike.h"
+#include "Net/UnrealNetwork.h"
 #include "SAction.h"
 
 USActionComponent::USActionComponent() {
   PrimaryComponentTick.bCanEverTick = true;
+
+  SetIsReplicatedByDefault(true);
 }
 
 void USActionComponent::BeginPlay() {
@@ -20,9 +24,21 @@ void USActionComponent::TickComponent(
     FActorComponentTickFunction *ThisTickFunction) {
   Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-  FString DebugMsg =
-      GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
-  GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
+  // FString DebugMsg = GetNameSafe(GetOwner()) + " : " +
+  // ActiveGameplayTags.ToStringSimple(); GEngine->AddOnScreenDebugMessage(-1,
+  // 0.0f, FColor::White, DebugMsg);
+
+  for (USAction *Action : Actions) {
+    FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+
+    FString ActionMsg = FString::Printf(
+        TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
+        *GetNameSafe(GetOwner()), *Action->ActionName.ToString(),
+        Action->IsRunning() ? TEXT("true") : TEXT("false"),
+        *GetNameSafe(Action->GetOuter()));
+
+    LogOnScreen(this, ActionMsg, TextColor, 0.0f);
+  }
 }
 
 void USActionComponent::AddAction(AActor *Instigator,
@@ -60,11 +76,21 @@ bool USActionComponent::StartActionByName(AActor *Instigator,
         continue;
       }
 
+      // Is Client
+      if (!GetOwner()->HasAuthority()) {
+        ServerStartActionByName(Instigator, ActionName);
+      }
+
       Action->StartAction(Instigator);
       return true;
     }
   }
   return false;
+}
+
+void USActionComponent::ServerStartActionByName_Implementation(
+    AActor *Instigator, FName ActionName) {
+  StartActionByName(Instigator, ActionName);
 }
 
 bool USActionComponent::StopActionByName(AActor *Instigator, FName ActionName) {

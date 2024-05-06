@@ -13,6 +13,8 @@ ASPowerUpActor::ASPowerUpActor() {
   MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
   CoolDownTime = 10.0f;
+
+  SetReplicates(true);
 }
 
 void ASPowerUpActor::Interact_Implementation(APawn *InstigatorPawn) {}

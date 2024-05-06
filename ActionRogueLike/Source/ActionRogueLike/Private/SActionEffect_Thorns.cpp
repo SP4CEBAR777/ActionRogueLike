@@ -24,6 +24,7 @@ void USActionEffect_Thorns::StartAction_Implementation(AActor *Instigator) {
 
 void USActionEffect_Thorns::StopAction_Implementation(AActor *Instigator) {
   Super::StopAction_Implementation(Instigator);
+
   USAttributeComponent *AttributeComp =
       USAttributeComponent::GetAttributes(Instigator);
   if (AttributeComp) {
@@ -36,6 +37,7 @@ void USActionEffect_Thorns::OnHealthChanged(AActor *InstigatorActor,
                                             USAttributeComponent *OwningComp,
                                             float NewHealth, float Delta) {
   AActor *OwningActor = GetOwningComponent()->GetOwner();
+
   if (Delta < 0.0f && OwningActor != InstigatorActor) {
     int32 ReflectionDamage = FMath::RoundToInt(Delta * ReflectionFraction);
     ReflectionDamage = FMath::Abs(ReflectionDamage);

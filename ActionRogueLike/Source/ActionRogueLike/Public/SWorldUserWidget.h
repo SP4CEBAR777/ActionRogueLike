@@ -21,7 +21,7 @@ protected:
   virtual void NativeTick(const FGeometry &MyGeometry, float InDeltaTime);
 
 public:
-  UPROPERTY(BlueprintReadOnly, Category = "UI")
+  UPROPERTY(BlueprintReadWrite, Category = "UI", meta = (ExposeOnSpawn = true))
   AActor *AttachedActor;
 
   UPROPERTY(EditAnywhere, Category = "UI")

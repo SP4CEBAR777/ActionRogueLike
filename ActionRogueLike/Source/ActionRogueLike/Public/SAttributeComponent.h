@@ -12,10 +12,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor *,
                                               OwningComp, float, NewHealth,
                                               float, Delta);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged,
-                                               USAttributeComponent *,
-                                               OwningComp, float, NewRage,
-                                               float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor *,
+                                              InstigatorActor,
+                                              USAttributeComponent *,
+                                              OwningComp, float, NewValue,
+                                              float, Delta);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API USAttributeComponent : public UActorComponent {
@@ -31,7 +32,7 @@ public:
   FOnHealthChanged OnHealthChanged;
 
   UPROPERTY(BlueprintAssignable)
-  FOnRageChanged OnRageChanged;
+  FOnAttributeChanged OnRageChanged;
 
   bool Kill(AActor *InstigatorActor);
 
@@ -39,7 +40,7 @@ public:
   bool ApplyHealthChange(AActor *InstigatorActor, float Delta);
 
   UFUNCTION(BlueprintCallable, Category = "Attributes")
-  void ApplyRageChange(float Delta);
+  void ApplyRageChange(AActor *InstigatorActor, float Delta);
 
   UFUNCTION(BlueprintCallable, Category = "Attributes",
             meta = (DisplayName = "IsAlive"))
@@ -76,15 +77,23 @@ protected:
   // --
   // Category = "" - display only for detail panels and blueprint context menu.
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated,
+            Category = "Attributes")
   float Health;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated,
+            Category = "Attributes")
   float HealthMax;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated,
+            Category = "Attributes")
   float Rage;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated,
+            Category = "Attributes")
   float RageMax;
+
+  UFUNCTION(NetMulticast, Unreliable)
+  void MulticastHealthChanged(AActor *InstigatorActor, float NewHealth,
+                              float Delta);
 };

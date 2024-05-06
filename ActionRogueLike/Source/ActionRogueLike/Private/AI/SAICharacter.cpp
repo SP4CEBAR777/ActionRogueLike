@@ -39,7 +39,18 @@ void ASAICharacter::PostInitializeComponents() {
                                             &ASAICharacter::OnHealthChanged);
 }
 
-void ASAICharacter::OnPawnSeen(APawn *Pawn) { SetTargetActor(Pawn); }
+void ASAICharacter::OnPawnSeen(APawn *Pawn) {
+  if (Pawn != GetTargetActor()) {
+    SetTargetActor(Pawn);
+
+    USWorldUserWidget *NewWidget =
+        CreateWidget<USWorldUserWidget>(GetWorld(), EnemySpottedWidgetClass);
+    if (NewWidget) {
+      NewWidget->AttachedActor = this;
+      NewWidget->AddToViewport(10);
+    }
+  }
+}
 
 void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
                                     USAttributeComponent *OwningComp,
@@ -98,17 +109,6 @@ AActor *ASAICharacter::GetTargetActor() const {
 void ASAICharacter::SetTargetActor(AActor *NewTarget) {
   AAIController *AIC = Cast<AAIController>(GetController());
   if (AIC) {
-    if (NewTarget != GetTargetActor()) {
-      USWorldUserWidget *ActiveEnemySpottedUI =
-          CreateWidget<USWorldUserWidget>(GetWorld(), EnemySpottedWidgetClass);
-      if (ActiveEnemySpottedUI) {
-        ActiveEnemySpottedUI->AttachedActor = this;
-        ActiveEnemySpottedUI->AddToViewport();
-        if (ensureMsgf(EnemySpottedSound, TEXT("EnemySpottedSound not set"))) {
-          ActiveEnemySpottedUI->PlaySound(EnemySpottedSound);
-        }
-      }
-    }
     AIC->GetBlackboardComponent()->SetValueAsObject(TargetActorKey, NewTarget);
   }
 }

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SAction.h"
+#include "../ActionRogueLike.h"
 #include "SActionComponent.h"
 
 bool USAction::CanStart_Implementation(AActor *Instigator) {
@@ -17,7 +18,10 @@ bool USAction::CanStart_Implementation(AActor *Instigator) {
 }
 
 void USAction::StartAction_Implementation(AActor *Instigator) {
-  UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
+  // UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
+  LogOnScreen(this,
+              FString::Printf(TEXT("Started: %s"), *ActionName.ToString()),
+              FColor::Green);
 
   USActionComponent *Comp = GetOwningComponent();
   Comp->ActiveGameplayTags.AppendTags(GrantsTags);
@@ -26,7 +30,10 @@ void USAction::StartAction_Implementation(AActor *Instigator) {
 }
 
 void USAction::StopAction_Implementation(AActor *Instigator) {
-  UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
+  // UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
+  LogOnScreen(this,
+              FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()),
+              FColor::White);
 
   ensureAlways(bIsRunning);
 

@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "UObject/NoExportTypes.h"
 #include "SAction.generated.h"
+#include "UObject/NoExportTypes.h"
 
 /**
  *
@@ -21,10 +21,11 @@ protected:
   UPROPERTY(EditDefaultsOnly, Category = "Tags")
   FGameplayTagContainer BlockedTags;
 
-  bool bIsRunning;
-
   UFUNCTION(BlueprintCallable, Category = "Action")
   USActionComponent *GetOwningComponent() const;
+
+  UPROPERTY(ReplicateUsing = "OnRep_IsRunning")
+  bool bIsRunning;
 
 public:
   UPROPERTY(EditDefaultsOnly, Category = "Action")
