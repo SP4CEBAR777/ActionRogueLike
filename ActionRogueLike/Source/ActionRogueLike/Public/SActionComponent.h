@@ -16,11 +16,19 @@ class ACTIONROGUELIKE_API USActionComponent : public UActorComponent {
 public:
   USActionComponent();
 
+  virtual void
+  TickComponent(float DeltaTime, ELevelTick TickType,
+                FActorComponentTickFunction *ThisTickFunction) override;
+
   UFUNCTION(BlueprintCallable, Category = "Action")
   void AddAction(AActor *Instigator, TSubclassOf<USAction> ActionClass);
 
   UFUNCTION(BlueprintCallable, Category = "Action")
   void RemoveAction(USAction *ActionClass);
+
+  virtual bool ReplicateSubobjects(class UActorChannel *Channel,
+                                   class FOutBunch *Bunch,
+                                   FReplicationFlags *RepFlags) override;
 
   UFUNCTION(BlueprintCallable, Category = "Action")
   bool StartActionByName(AActor *Instigator, FName ActionName);
@@ -43,11 +51,6 @@ protected:
   UPROPERTY(EditAnywhere, Category = "Actions")
   TArray<TSubclassOf<USAction>> DefaultActions;
 
-  UPROPERTY()
+  UPROPERTY(Replicated)
   TArray<USAction *> Actions;
-
-public:
-  virtual void
-  TickComponent(float DeltaTime, ELevelTick TickType,
-                FActorComponentTickFunction *ThisTickFunction) override;
 };

@@ -18,10 +18,17 @@ class ACTIONROGUELIKE_API ASPlayerState : public APlayerState {
   GENERATED_BODY()
 
 protected:
-  UPROPERTY(EditDefaultsOnly, Category = "Credits")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Credits",
+            Replicated)
   int32 Credits;
 
+  UFUNCTION(NetMulticast, Reliable)
+  void MulticastCreditsChanged(ASPlayerState *InstigatorActor, int32 NewCredits,
+                               int32 Delta);
+
 public:
+  ASPlayerState();
+
   UFUNCTION(BlueprintCallable, Category = "Credits")
   bool AddCredits(int32 Delta);
 

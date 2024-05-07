@@ -30,6 +30,12 @@ protected:
 
   FTimerHandle TimerHandle_CoolDownTimer;
 
+  UPROPERTY(ReplicatedUsing = "OnRep_IsActive", BlueprintReadOnly)
+  bool bIsActive;
+
+  UFUNCTION()
+  void OnRep_IsActive();
+
   UFUNCTION()
   void ShowPowerUp();
 

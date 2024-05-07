@@ -29,7 +29,7 @@ public:
   static USAttributeComponent *GetAttributes(AActor *FromActor);
 
   UPROPERTY(BlueprintAssignable)
-  FOnHealthChanged OnHealthChanged;
+  FOnAttributeChanged OnHealthChanged;
 
   UPROPERTY(BlueprintAssignable)
   FOnAttributeChanged OnRageChanged;
@@ -96,4 +96,8 @@ protected:
   UFUNCTION(NetMulticast, Unreliable)
   void MulticastHealthChanged(AActor *InstigatorActor, float NewHealth,
                               float Delta);
+
+  UFUNCTION(NetMulticast, Unreliable)
+  void MulticastRageChanged(AActor *InstigatorActor, float NewRage,
+                            float Delta);
 };

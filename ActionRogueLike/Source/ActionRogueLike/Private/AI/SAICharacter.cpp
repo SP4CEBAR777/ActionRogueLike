@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "SActionComponent.h"
 #include "SAttributeComponent.h"
@@ -29,12 +30,15 @@ ASAICharacter::ASAICharacter() {
   GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic,
                                                        ECR_Ignore);
   GetMesh()->SetGenerateOverlapEvents(true);
+
+  SetReplicates(true);
 }
 
 void ASAICharacter::PostInitializeComponents() {
   Super::PostInitializeComponents();
 
-  PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
+  PawnSensingComp->OnSeePawn.AddDynamic(this,
+                                        &ASAICharacter::MulticastOnPawnSeen);
   AttributeComp->OnHealthChanged.AddDynamic(this,
                                             &ASAICharacter::OnHealthChanged);
 }
@@ -43,12 +47,18 @@ void ASAICharacter::OnPawnSeen(APawn *Pawn) {
   if (Pawn != GetTargetActor()) {
     SetTargetActor(Pawn);
 
-    USWorldUserWidget *NewWidget =
-        CreateWidget<USWorldUserWidget>(GetWorld(), EnemySpottedWidgetClass);
-    if (NewWidget) {
-      NewWidget->AttachedActor = this;
-      NewWidget->AddToViewport(10);
-    }
+    MulticastOnPawnSeen(Pawn);
+  }
+}
+
+void ASAICharacter::MulticastOnPawnSeen_Implementation(APawn *Pawn) {
+  USWorldUserWidget *NewWidget =
+      CreateWidget<USWorldUserWidget>(GetWorld(), EnemySpottedWidgetClass);
+  if (NewWidget) {
+    NewWidget->AttachedActor = this;
+    // Index of 10 (or anything higher than default of 0) places this on top of
+    // any other widget. May end up behind the minion health bar otherwise.
+    NewWidget->AddToViewport(10);
   }
 }
 

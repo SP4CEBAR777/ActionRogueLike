@@ -4,8 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "SAction.generated.h"
 #include "UObject/NoExportTypes.h"
+#include "SAction.generated.h"
+
+USTRUCT()
+struct FActionRepData {
+  GENERATED_BODY()
+
+public:
+  UPROPERTY()
+  bool bIsRunning;
+
+  UPROPERTY()
+  AActor *Instigator;
+};
 
 /**
  *
@@ -15,6 +27,9 @@ class ACTIONROGUELIKE_API USAction : public UObject {
   GENERATED_BODY()
 
 protected:
+  UPROPERTY(Replicated)
+  USActionComponent *ActionComp;
+
   UPROPERTY(EditDefaultsOnly, Category = "Tags")
   FGameplayTagContainer GrantsTags;
 
@@ -24,10 +39,15 @@ protected:
   UFUNCTION(BlueprintCallable, Category = "Action")
   USActionComponent *GetOwningComponent() const;
 
-  UPROPERTY(ReplicateUsing = "OnRep_IsRunning")
-  bool bIsRunning;
+  UPROPERTY(ReplicatedUsing = "OnRep_RepData")
+  FActionRepData RepData;
+
+  UFUNCTION()
+  void OnRep_RepData();
 
 public:
+  void Initialize(USActionComponent *NewActionComp);
+
   UPROPERTY(EditDefaultsOnly, Category = "Action")
   FName ActionName;
 
@@ -47,4 +67,6 @@ public:
   bool IsRunning() const;
 
   UWorld *GetWorld() const override;
+
+  virtual bool IsSupportedForNetworking() const override { return true; }
 };

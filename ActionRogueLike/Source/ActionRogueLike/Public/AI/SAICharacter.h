@@ -8,7 +8,6 @@
 
 class UPawnSensingComponent;
 class USAttributeComponent;
-class UUserWidget;
 class USWorldUserWidget;
 class USActionComponent;
 class USoundBase;
@@ -61,4 +60,7 @@ protected:
 
   UFUNCTION()
   void OnPawnSeen(APawn *Pawn);
+
+  UFUNCTION(NetMulticast, Unreliable)
+  void MulticastOnPawnSeen(APawn *Pawn);
 };

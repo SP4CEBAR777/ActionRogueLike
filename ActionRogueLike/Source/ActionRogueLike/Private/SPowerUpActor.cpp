@@ -2,6 +2,7 @@
 
 #include "SPowerUpActor.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASPowerUpActor::ASPowerUpActor() {
@@ -13,11 +14,18 @@ ASPowerUpActor::ASPowerUpActor() {
   MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
   CoolDownTime = 10.0f;
+  bIsActive = true;
 
   SetReplicates(true);
 }
 
 void ASPowerUpActor::Interact_Implementation(APawn *InstigatorPawn) {}
+
+void ASPowerUpActor::OnRep_IsActive() {
+  SetActorEnableCollision(bIsActive);
+
+  RootComponent->SetVisibility(bIsActive, true);
+}
 
 void ASPowerUpActor::ShowPowerUp() { SetPowerUpState(true); }
 
@@ -28,8 +36,14 @@ void ASPowerUpActor::HideAndCoolDownPowerUp() {
                                   &ASPowerUpActor::ShowPowerUp, CoolDownTime);
 }
 
-void ASPowerUpActor::SetPowerUpState(bool bShouldActive) {
-  SetActorEnableCollision(bShouldActive);
+void ASPowerUpActor::SetPowerUpState(bool bNewIsActive) {
+  bIsActive = bNewIsActive;
+  OnRep_IsActive();
+}
 
-  RootComponent->SetVisibility(bShouldActive, true);
+void ASPowerUpActor::GetLifetimeReplicatedProps(
+    TArray<FLifetimeProperty> &OutLifetimeProps) const {
+  Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+  DOREPLIFETIME(ASPowerUpActor, bIsActive);
 }
