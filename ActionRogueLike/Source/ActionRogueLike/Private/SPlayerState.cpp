@@ -2,6 +2,7 @@
 
 #include "SPlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "SSavegame.h"
 
 ASPlayerState::ASPlayerState() { SetReplicates(true); }
 
@@ -34,6 +35,21 @@ bool ASPlayerState::RemoveCredits(int32 Delta) {
 }
 
 int32 ASPlayerState::GetCredits() const { return Credits; }
+
+void ASPlayerState::SavePlayerState_Implementation(USSaveGame *SaveObject) {
+  if (SaveObject) {
+    FString DebugMsg =
+        FString::Printf(TEXT("SaveObject name: %s"), *GetNameSafe(SaveObject));
+    GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::White, DebugMsg);
+    SaveObject->Credits = Credits;
+  }
+}
+
+void ASPlayerState::LoadPlayerState_Implementation(USSaveGame *SaveObject) {
+  if (SaveObject) {
+    Credits = SaveObject->Credits;
+  }
+}
 
 void ASPlayerState::GetLifetimeReplicatedProps(
     TArray<FLifetimeProperty> &OutLifetimeProps) const {

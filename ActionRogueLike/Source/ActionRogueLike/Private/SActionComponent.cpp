@@ -35,11 +35,9 @@ void USActionComponent::TickComponent(
   for (USAction *Action : Actions) {
     FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
 
-    FString ActionMsg = FString::Printf(
-        TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
-        *GetNameSafe(GetOwner()), *Action->ActionName.ToString(),
-        Action->IsRunning() ? TEXT("true") : TEXT("false"),
-        *GetNameSafe(Action->GetOuter()));
+    FString ActionMsg =
+        FString::Printf(TEXT("[%s] Action: %s : "), *GetNameSafe(GetOwner()),
+                        *GetNameSafe(Action));
 
     LogOnScreen(this, ActionMsg, TextColor, 0.0f);
   }
@@ -102,12 +100,23 @@ bool USActionComponent::StopActionByName(AActor *Instigator, FName ActionName) {
   for (USAction *Action : Actions) {
     if (Action && Action->ActionName == ActionName) {
       if (Action->IsRunning()) {
+
+        // Is Client
+        if (!GetOwner()->HasAuthority()) {
+          ServerStopActionByName(Instigator, ActionName);
+        }
+
         Action->StopAction(Instigator);
         return true;
       }
     }
   }
   return false;
+}
+
+void USActionComponent::ServerStopActionByName_Implementation(
+    AActor *Instigator, FName ActionName) {
+  StopActionByName(Instigator, ActionName);
 }
 
 USAction *
