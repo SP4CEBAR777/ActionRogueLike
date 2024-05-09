@@ -15,11 +15,11 @@ class ACTIONROGUELIKE_API USInteractionComponent : public UActorComponent {
 public:
   USInteractionComponent();
 
-  void PrimaryInteract();
-
   virtual void
   TickComponent(float DeltaTime, ELevelTick TickType,
                 FActorComponentTickFunction *ThisTickFunction) override;
+
+  void PrimaryInteract();
 
 protected:
   UPROPERTY(EditDefaultsOnly, Category = "Trace")

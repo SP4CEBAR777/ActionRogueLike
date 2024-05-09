@@ -20,13 +20,14 @@ class ACTIONROGUELIKE_API ASPlayerState : public APlayerState {
   GENERATED_BODY()
 
 protected:
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Credits",
-            Replicated)
+  UPROPERTY(EditDefaultsOnly, ReplicatedUsing = "OnRep_Credits",
+            BlueprintReadOnly, Category = "Credits")
   int32 Credits;
 
-  UFUNCTION(NetMulticast, Reliable)
-  void MulticastCreditsChanged(ASPlayerState *InstigatorActor, int32 NewCredits,
-                               int32 Delta);
+  // OnRep_ can use a parameter containing the 'old value' of the variable it is
+  // bound to. Very useful in this case to figure out the 'delta'.
+  UFUNCTION()
+  void OnRep_Credits(int32 OldCredits);
 
 public:
   ASPlayerState();

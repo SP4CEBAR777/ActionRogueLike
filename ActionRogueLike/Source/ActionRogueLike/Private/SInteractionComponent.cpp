@@ -29,8 +29,6 @@ void USInteractionComponent::TickComponent(
   }
 }
 
-void USInteractionComponent::PrimaryInteract() { ServerInteract(FocusActor); }
-
 void USInteractionComponent::FindBestInteractable() {
   bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
 
@@ -97,6 +95,8 @@ void USInteractionComponent::FindBestInteractable() {
   }
 }
 
+void USInteractionComponent::PrimaryInteract() { ServerInteract(FocusActor); }
+
 void USInteractionComponent::ServerInteract_Implementation(AActor *InFocus) {
   if (InFocus == nullptr) {
     GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red,
@@ -105,6 +105,5 @@ void USInteractionComponent::ServerInteract_Implementation(AActor *InFocus) {
   }
 
   APawn *MyPawn = Cast<APawn>(GetOwner());
-
   ISGameplayInterface::Execute_Interact(InFocus, MyPawn);
 }

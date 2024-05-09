@@ -97,7 +97,7 @@ protected:
   void MulticastHealthChanged(AActor *InstigatorActor, float NewHealth,
                               float Delta);
 
-  UFUNCTION(NetMulticast, Unreliable)
+  UFUNCTION(NetMulticast, Unreliable) // Cosmetics only hence Unreliable
   void MulticastRageChanged(AActor *InstigatorActor, float NewRage,
                             float Delta);
 };

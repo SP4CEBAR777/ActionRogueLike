@@ -22,8 +22,9 @@ protected:
   UPROPERTY(VisibleAnywhere, Category = "AI")
   USWorldUserWidget *ActiveHealthBar;
 
-  UPROPERTY(EditDefaultsOnly, Category = "AI")
-  USoundBase *EnemySpottedSound;
+  // Disabled cause it's too annoying
+  // UPROPERTY(EditDefaultsOnly, Category = "AI")
+  // USoundBase *EnemySpottedSound;
 
   UPROPERTY(VisibleAnywhere, Category = "Components")
   UPawnSensingComponent *PawnSensingComp;
