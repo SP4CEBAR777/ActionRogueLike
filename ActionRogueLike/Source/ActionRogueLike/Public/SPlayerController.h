@@ -24,6 +24,12 @@ protected:
   UPROPERTY(BlueprintAssignable)
   FOnPawnChanged OnPawnChanged;
 
+  UPROPERTY(EditDefaultsOnly, Category = "UI")
+  TSubclassOf<UUserWidget> PauseMenuWidgetClass;
+
+  UPROPERTY()
+  UUserWidget *PauseMenuWidgetInstance;
+
   // Listen for incoming player state (for clients this may be nullptr when
   // initially joining a game, afterwards player state will not change again as
   // PlayerControllers maintain the same player state throughout the level)
@@ -33,4 +39,9 @@ protected:
   virtual void SetPawn(APawn *InPawn) override;
 
   void OnRep_PlayerState() override;
+
+  void SetupInputComponent() override;
+
+  UFUNCTION(BlueprintCallable)
+  void TogglePauseMenu();
 };
