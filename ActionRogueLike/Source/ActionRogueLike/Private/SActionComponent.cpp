@@ -32,15 +32,14 @@ void USActionComponent::TickComponent(
   // ActiveGameplayTags.ToStringSimple(); GEngine->AddOnScreenDebugMessage(-1,
   // 0.0f, FColor::White, DebugMsg);
 
-  for (USAction *Action : Actions) {
-    FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+  // for (USAction *Action : Actions) {
+  //   FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
 
-    FString ActionMsg =
-        FString::Printf(TEXT("[%s] Action: %s : "), *GetNameSafe(GetOwner()),
-                        *GetNameSafe(Action));
+  // FString ActionMsg =
+  //     FString::Printf(TEXT("[%s] Action: %s : "), *GetNameSafe(GetOwner()),
+  //                     *GetNameSafe(Action));
 
-    LogOnScreen(this, ActionMsg, TextColor, 0.0f);
-  }
+  // LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 }
 
 void USActionComponent::AddAction(AActor *Instigator,

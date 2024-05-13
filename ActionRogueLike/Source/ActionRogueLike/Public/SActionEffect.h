@@ -19,6 +19,9 @@ public:
 
   void StopAction_Implementation(AActor *Instigator) override;
 
+  UFUNCTION(BlueprintCallable, Category = "Action")
+  float GetBuffTimeRemaining() const;
+
 protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
   float Duration;

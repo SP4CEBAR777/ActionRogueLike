@@ -30,6 +30,9 @@ protected:
   UPROPERTY(Replicated)
   USActionComponent *ActionComp;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+  UTexture2D *Icon;
+
   UPROPERTY(EditDefaultsOnly, Category = "Tags")
   FGameplayTagContainer GrantsTags;
 
@@ -41,6 +44,9 @@ protected:
 
   UPROPERTY(ReplicatedUsing = "OnRep_RepData")
   FActionRepData RepData;
+
+  UPROPERTY(Replicated)
+  float TimeStarted;
 
   UFUNCTION()
   void OnRep_RepData();

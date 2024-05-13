@@ -30,15 +30,12 @@ ASAICharacter::ASAICharacter() {
   GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic,
                                                        ECR_Ignore);
   GetMesh()->SetGenerateOverlapEvents(true);
-
-  SetReplicates(true);
 }
 
 void ASAICharacter::PostInitializeComponents() {
   Super::PostInitializeComponents();
 
-  PawnSensingComp->OnSeePawn.AddDynamic(this,
-                                        &ASAICharacter::MulticastOnPawnSeen);
+  PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
   AttributeComp->OnHealthChanged.AddDynamic(this,
                                             &ASAICharacter::OnHealthChanged);
 }
@@ -46,7 +43,8 @@ void ASAICharacter::PostInitializeComponents() {
 void ASAICharacter::OnPawnSeen(APawn *Pawn) {
   if (Pawn != GetTargetActor()) {
     SetTargetActor(Pawn);
-
+    // DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED",
+    // nullptr, FColor::White, 0.5f, true);
     MulticastOnPawnSeen(Pawn);
   }
 }
@@ -73,7 +71,7 @@ void ASAICharacter::OnHealthChanged(AActor *InstigatorActor,
     GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName,
                                                   GetWorld()->TimeSeconds);
 
-    if (ActiveHealthBar == nullptr) {
+    if (ActiveHealthBar == nullptr && NewHealth > 0.0f) {
       ActiveHealthBar =
           CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
       if (ActiveHealthBar) {

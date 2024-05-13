@@ -7,6 +7,10 @@
 #include "GameplayTagContainer.h"
 #include "SActionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged,
+                                             USActionComponent *, OwningComp,
+                                             USAction *, Action);
+
 class USAction;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -15,6 +19,12 @@ class ACTIONROGUELIKE_API USActionComponent : public UActorComponent {
 
 public:
   USActionComponent();
+
+  UPROPERTY(BlueprintAssignable)
+  FOnActionStateChanged OnActionStarted;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnActionStateChanged OnActionStopped;
 
   virtual void
   TickComponent(float DeltaTime, ELevelTick TickType,
@@ -54,6 +64,6 @@ protected:
   UPROPERTY(EditAnywhere, Category = "Actions")
   TArray<TSubclassOf<USAction>> DefaultActions;
 
-  UPROPERTY(Replicated)
+  UPROPERTY(BlueprintReadOnly, Replicated)
   TArray<USAction *> Actions;
 };
