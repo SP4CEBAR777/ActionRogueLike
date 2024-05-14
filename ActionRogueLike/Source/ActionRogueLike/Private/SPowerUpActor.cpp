@@ -21,6 +21,10 @@ ASPowerUpActor::ASPowerUpActor() {
 
 void ASPowerUpActor::Interact_Implementation(APawn *InstigatorPawn) {}
 
+FText ASPowerUpActor::GetInteractText_Implementation(APawn *InstigatorPawn) {
+  return FText::GetEmpty();
+}
+
 void ASPowerUpActor::OnRep_IsActive() {
   SetActorEnableCollision(bIsActive);
 
