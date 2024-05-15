@@ -14,7 +14,7 @@ ASItemChest::ASItemChest() {
 
   TargetPitch = 110.0f;
 
-  SetReplicates(true);
+  bReplicates = true;
 }
 
 void ASItemChest::Interact_Implementation(APawn *InstigatorPawn) {

@@ -8,6 +8,8 @@
 USInteractionComponent::USInteractionComponent() {
   PrimaryComponentTick.bCanEverTick = true;
 
+  PrimaryComponentTick.TickGroup = TG_PostUpdateWork;
+
   TraceDistance = 500.0f;
   TraceRadius = 30.0f;
   CollisionChannel = ECC_WorldDynamic;

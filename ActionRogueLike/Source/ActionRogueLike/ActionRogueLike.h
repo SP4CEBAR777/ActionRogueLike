@@ -20,3 +20,6 @@ static void LogOnScreen(UObject *WorldContext, FString Msg,
     GEngine->AddOnScreenDebugMessage(-1, Duration, Color, NetPrefix + Msg);
   }
 }
+
+DECLARE_STATS_GROUP(TEXT("STANDARD_Game"), STATGROUP_STANDARD,
+                    STATCAT_Advanced);

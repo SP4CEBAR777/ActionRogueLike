@@ -46,8 +46,8 @@ void ASDashProjectile::TeleportInstigator() {
   AActor *ActorToTeleport = GetInstigator();
   if (ensure(ActorToTeleport)) {
     // Keep instigator rotation or it may end up jarring
-    ActorToTeleport->TeleportTo(GetActorLocation(),
-                                ActorToTeleport->GetActorRotation());
+    ActorToTeleport->TeleportTo(
+        GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
   }
 
   Destroy();

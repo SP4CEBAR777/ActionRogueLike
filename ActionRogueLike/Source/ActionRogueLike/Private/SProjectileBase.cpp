@@ -9,7 +9,7 @@
 ASProjectileBase::ASProjectileBase() {
   SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
   SphereComp->SetCollisionProfileName("Projectile");
-  SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnActorHit);
+
   RootComponent = SphereComp;
 
   EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
@@ -25,7 +25,7 @@ ASProjectileBase::ASProjectileBase() {
   MoveComp->ProjectileGravityScale = 0.0f;
   MoveComp->InitialSpeed = 8000.0f;
 
-  SetReplicates(true);
+  bReplicates = true;
 }
 
 void ASProjectileBase::OnActorHit(UPrimitiveComponent *HitComponent,
@@ -53,4 +53,6 @@ void ASProjectileBase::Explode_Implementation() {
 
 void ASProjectileBase::PostInitializeComponents() {
   Super::PostInitializeComponents();
+
+  SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnActorHit);
 }

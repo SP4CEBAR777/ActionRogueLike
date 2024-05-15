@@ -16,7 +16,7 @@ ASPowerUpActor::ASPowerUpActor() {
   CoolDownTime = 10.0f;
   bIsActive = true;
 
-  SetReplicates(true);
+  bReplicates = true;
 }
 
 void ASPowerUpActor::Interact_Implementation(APawn *InstigatorPawn) {}

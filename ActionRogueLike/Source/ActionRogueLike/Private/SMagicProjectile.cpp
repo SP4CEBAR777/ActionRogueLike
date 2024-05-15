@@ -10,8 +10,8 @@
 
 ASMagicProjectile::ASMagicProjectile() {
   SphereComp->SetSphereRadius(20.0f);
-  SphereComp->OnComponentBeginOverlap.AddDynamic(
-      this, &ASMagicProjectile::OnActorOverlap);
+
+  InitialLifeSpan = 10.0f;
 
   DamageAmount = 20.0f;
 }
@@ -37,9 +37,16 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent *OverlappedComponent,
             GetInstigator(), OtherActor, DamageAmount, SweepResult)) {
       Super::Explode();
 
-      if (ActionComp) {
+      if (ActionComp && BurningActionClass && HasAuthority()) {
         ActionComp->AddAction(GetInstigator(), BurningActionClass);
       }
     }
   }
+}
+
+void ASMagicProjectile::PostInitializeComponents() {
+  Super::PostInitializeComponents();
+
+  SphereComp->OnComponentBeginOverlap.AddDynamic(
+      this, &ASMagicProjectile::OnActorOverlap);
 }
