@@ -68,6 +68,7 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(
 
     FHitResult Hit;
     // returns true if we got to a blocking hit
+    // ECC_GameTraceChannel1 found in DefaultEngine.ini
     if (GetWorld()->SweepSingleByChannel(Hit, TraceStart, TraceEnd,
                                          FQuat::Identity, ECC_GameTraceChannel1,
                                          Shape, Params)) {

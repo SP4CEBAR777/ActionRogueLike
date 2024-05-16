@@ -11,7 +11,7 @@ static TAutoConsoleVariable<float> CVarDamageMultiplier(
 USAttributeComponent::USAttributeComponent() {
   HealthMax = 100.0f;
   Health = HealthMax;
-  Rage = 80.0f;
+  Rage = 0.0f;
   RageMax = 100.0f;
 
   SetIsReplicatedByDefault(true);

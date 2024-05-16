@@ -53,6 +53,12 @@ public:
   FGameplayTagContainer ActiveGameplayTags;
 
 protected:
+  UPROPERTY(EditAnywhere, Category = "Actions")
+  TArray<TSubclassOf<USAction>> DefaultActions;
+
+  UPROPERTY(BlueprintReadOnly, Replicated)
+  TArray<USAction *> Actions;
+
   virtual void BeginPlay() override;
 
   virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -63,9 +69,6 @@ protected:
   UFUNCTION(Server, Reliable)
   void ServerStopActionByName(AActor *Instigator, FName ActionName);
 
-  UPROPERTY(EditAnywhere, Category = "Actions")
-  TArray<TSubclassOf<USAction>> DefaultActions;
-
-  UPROPERTY(BlueprintReadOnly, Replicated)
-  TArray<USAction *> Actions;
+  UFUNCTION(BlueprintCallable, Category = "Action")
+  bool HasAction(FName ActionToFind);
 };

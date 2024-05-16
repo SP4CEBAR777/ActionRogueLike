@@ -2,6 +2,7 @@
 
 #include "SPlayerController.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void ASPlayerController::SetPawn(APawn *InPawn) {
   Super::SetPawn(InPawn);
@@ -27,6 +28,11 @@ void ASPlayerController::TogglePauseMenu() {
 
     bShowMouseCursor = false;
     SetInputMode(FInputModeGameOnly());
+
+    // Only pauses when in singleplayer
+    if (GetWorld()->IsNetMode(NM_Standalone)) {
+      UGameplayStatics::SetGamePaused(this, false);
+    }
     return;
   }
 
@@ -37,5 +43,10 @@ void ASPlayerController::TogglePauseMenu() {
 
     bShowMouseCursor = true;
     SetInputMode(FInputModeUIOnly());
+
+    // Only pauses when in singleplayer
+    if (GetWorld()->IsNetMode(NM_Standalone)) {
+      UGameplayStatics::SetGamePaused(this, true);
+    }
   }
 }

@@ -40,11 +40,6 @@ void ASGameModeBase::InitGame(const FString &MapName, const FString &Options,
                               FString &ErrorMessage) {
   Super::InitGame(MapName, Options, ErrorMessage);
 
-  FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
-  if (SelectedSaveSlot.Len() > 0) {
-    SlotName = SelectedSaveSlot;
-  }
-
   LoadSaveGame();
 }
 
@@ -141,7 +136,7 @@ void ASGameModeBase::OnSpawnBotQueryCompleted(
           Locations[0]);
       UAssetManager *Manager = UAssetManager::GetIfInitialized();
       if (Manager) {
-        LogOnScreen(this, "Loading monster...", FColor::Green);
+        // LogOnScreen(this, "Loading monster...", FColor::Green);
         Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
       }
     }
@@ -150,7 +145,7 @@ void ASGameModeBase::OnSpawnBotQueryCompleted(
 
 void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId,
                                      FVector SpawnLocation) {
-  LogOnScreen(this, "Finished loading.", FColor::Green);
+  // LogOnScreen(this, "Finished loading.", FColor::Green);
   UAssetManager *Manager = UAssetManager::GetIfInitialized();
   if (Manager) {
     USMonsterData *MonsterData =
@@ -159,9 +154,9 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId,
       AActor *NewBot = GetWorld()->SpawnActor<AActor>(
           MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
       if (NewBot) {
-        LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"),
-                                          *GetNameSafe(NewBot),
-                                          *GetNameSafe(MonsterData)));
+        // LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"),
+        //                                   *GetNameSafe(NewBot),
+        //                                   *GetNameSafe(MonsterData)));
 
         // Grant special actions, buffs etc.
         USActionComponent *ActionComp = Cast<USActionComponent>(

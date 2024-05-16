@@ -64,13 +64,14 @@ void USActionComponent::AddAction(AActor *Instigator,
   }
 
   USAction *NewAction = NewObject<USAction>(GetOwner(), ActionClass);
-  if (ensure(NewAction)) {
+  // Avoid duplicating actions
+  if (ensure(NewAction) && !HasAction(NewAction->ActionName)) {
     NewAction->Initialize(this);
     Actions.Add(NewAction);
-  }
 
-  if (NewAction->bIsAutoStart && ensure(NewAction->CanStart(Instigator))) {
-    NewAction->StartAction(Instigator);
+    if (NewAction->bIsAutoStart && ensure(NewAction->CanStart(Instigator))) {
+      NewAction->StartAction(Instigator);
+    }
   }
 }
 
@@ -166,4 +167,13 @@ void USActionComponent::GetLifetimeReplicatedProps(
   Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
   DOREPLIFETIME(USActionComponent, Actions);
+}
+
+bool USActionComponent::HasAction(FName ActionToFind) {
+  for (USAction *Action : Actions) {
+    if (Action && Action->ActionName == ActionToFind) {
+      return true;
+    }
+  }
+  return false;
 }
