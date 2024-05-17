@@ -2,6 +2,7 @@
 
 #include "SCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -27,6 +28,10 @@ ASCharacter::ASCharacter() {
   AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
   ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
+
+  // Mesh reacts to incoming projectiles, capusule component don't
+  GetMesh()->SetGenerateOverlapEvents(true);
+  GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 
   GetCharacterMovement()->bOrientRotationToMovement = true;
   bUseControllerRotationYaw = false;
@@ -135,6 +140,6 @@ void ASCharacter::OnHealthChanged(AActor *InstigatorActor,
   }
 }
 
-void ASCharacter::HealSelf(float Amount /* = 100*/) {
+void ASCharacter::HealSelf(float Amount /*= 100*/) {
   AttributeComp->ApplyHealthChange(this, Amount);
 }
